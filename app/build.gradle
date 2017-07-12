@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.jakewharton.butterknife'
+//使用greendao
+apply plugin: 'org.greenrobot.greendao'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -10,6 +12,13 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    //greendao配置
+    greendao {
+        //版本号，升级时可配置
+        schemaVersion 1
+        daoPackage 'cz.com.dosomething.db'
+        targetGenDir 'src/main/java'
     }
     buildTypes {
         release {
@@ -38,4 +47,6 @@ dependencies {
     compile 'com.android.support:support-v4:25.3.1'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
+    //greendao依赖
+    compile 'org.greenrobot:greendao:3.2.0'
 }

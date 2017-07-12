@@ -16,6 +16,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.com.dosomething.R;
 import cz.com.dosomething.adapter.ViewPageAdapter;
+import cz.com.dosomething.bean.Task;
+import cz.com.dosomething.bean.TaskInfo;
 import cz.com.dosomething.fragment.BaseFragment;
 
 public class WelcomeActivity extends BaseActivity {
@@ -35,6 +37,7 @@ public class WelcomeActivity extends BaseActivity {
     private List<Fragment>fraglist=new ArrayList<>();
     private List<String>titlelist=new ArrayList<>();
     private ViewPageAdapter adapter;
+    private List<Task>taskList=new ArrayList<>();
 
     @Override
     protected int getContentViewId() {
@@ -46,10 +49,29 @@ public class WelcomeActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
         ButterKnife.bind(this);
+        initTask();
         initToolbar();
        initFragment();
         initViewPage();
         initTabs();
+    }
+
+    private void initTask() {
+        for (int i = 0; i <5 ; i++) {
+            Task task=new Task();
+            task.setType("任务"+i);
+            task.setNum(i);
+         List<TaskInfo>taskinfoList=new ArrayList<>();
+            for (int j = 0; j < 10; j++) {
+                TaskInfo taskinfo=new TaskInfo();
+                taskinfo.setContent("吃饭");
+                taskinfo.setTitle("对");
+                taskinfoList.add(taskinfo);
+            }
+            task.setList(taskinfoList);
+            taskList.add(task);
+        }
+
     }
 
     private void initTabs() {
@@ -68,10 +90,12 @@ public class WelcomeActivity extends BaseActivity {
 
     private void initFragment() {
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < taskList.size(); i++) {
             BaseFragment basefragment=new BaseFragment();
             fraglist.add(basefragment);
-            titlelist.add("第"+i+"个");
+            titlelist.add(taskList.get(i).getType());
+            Bundle bundle = new Bundle();
+            basefragment.setArguments(bundle);
         }
 
     }
