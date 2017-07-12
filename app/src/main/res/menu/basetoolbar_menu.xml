@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <item
+        android:id="@+id/action_notification"
+        android:icon="@drawable/order"
+        android:title="排序"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_share"
+        android:icon="@drawable/share_light"
+        android:title="分享"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_item1"
+        android:title="清除已完成任务"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_item2"
+        android:title="作者"
+        app:showAsAction="never" />
+
+</menu>

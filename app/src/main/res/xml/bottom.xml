@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs >
+    <tab
+        id="@+id/tab_favorites"
+
+        title="ddd"
+        barColorWhenSelected="#2196f3" />
+    <tab
+        id="@+id/tab_nearby"
+       title="aaaa"
+
+        barColorWhenSelected="#2196f3" />
+    <tab
+        id="@+id/tab_friends"
+        title="cccc"
+        barColorWhenSelected="#2196f3" />
+</tabs>
