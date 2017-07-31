@@ -7,8 +7,8 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "cz.com.dosomething"
-        minSdkVersion 14
-        targetSdkVersion 25
+        minSdkVersion 16
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -49,4 +49,6 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
     //greendao依赖
     compile 'org.greenrobot:greendao:3.2.0'
+    //动画
+    compile 'com.github.asyl.animation:arcanimator:1.0.0'
 }

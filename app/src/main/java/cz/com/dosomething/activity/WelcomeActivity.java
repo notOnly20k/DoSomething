@@ -1,12 +1,23 @@
 package cz.com.dosomething.activity;
 
+import android.animation.Animator;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -34,10 +45,12 @@ public class WelcomeActivity extends BaseActivity {
     AppBarLayout appbar;
     @BindView(R.id.activity_welcome)
     DrawerLayout activityWelcome;
-    private List<Fragment>fraglist=new ArrayList<>();
-    private List<String>titlelist=new ArrayList<>();
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
+    private List<Fragment> fraglist = new ArrayList<>();
+    private List<String> titlelist = new ArrayList<>();
     private ViewPageAdapter adapter;
-    private List<Task>taskList=new ArrayList<>();
+    private List<Task> taskList = new ArrayList<>();
 
     @Override
     protected int getContentViewId() {
@@ -47,23 +60,62 @@ public class WelcomeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome);
+        //setContentView(R.layout.activity_welcome);
+
         ButterKnife.bind(this);
+        final View v=findViewById(R.id.activity_welcome);
+        v.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                v.removeOnLayoutChangeListener(this);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Log.e("onLayoutChange", "onLayoutChange: " );
+                    disappearRed();
+                }
+            }
+        });
         initTask();
         initToolbar();
-       initFragment();
+        initFragment();
         initViewPage();
         initTabs();
+        setFab();
+
     }
 
+    private void setFab() {
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(WelcomeActivity.this,WriteTaskActivity.class);
+                ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        WelcomeActivity.this,fab,"fab");
+
+                 //ActivityCompat是android支持库中用来适应不同android版本的
+                ActivityCompat.startActivity(WelcomeActivity.this, intent, activityOptions.toBundle());
+                //startActivity(intent);
+            }
+        });
+    }
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    void disappearRed() {
+
+        int cx = fab.getWidth() / 2;
+        int cy = fab.getHeight() / 2;
+
+        Animator animator = ViewAnimationUtils.createCircularReveal(fab, cx, cy,0, cy);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.setDuration(1000);
+        animator.start();
+    }
     private void initTask() {
-        for (int i = 0; i <5 ; i++) {
-            Task task=new Task();
-            task.setType("任务"+i);
+        for (int i = 0; i < 5; i++) {
+            Task task = new Task();
+            task.setType("任务" + i);
             task.setNum(i);
-         List<TaskInfo>taskinfoList=new ArrayList<>();
+            List<TaskInfo> taskinfoList = new ArrayList<>();
             for (int j = 0; j < 10; j++) {
-                TaskInfo taskinfo=new TaskInfo();
+                TaskInfo taskinfo = new TaskInfo();
                 taskinfo.setContent("吃饭");
                 taskinfo.setTitle("对");
                 taskinfoList.add(taskinfo);
@@ -77,13 +129,14 @@ public class WelcomeActivity extends BaseActivity {
     private void initTabs() {
         tabs.setupWithViewPager(viewpager);
         tabs.setSelectedTabIndicatorColor(getResources().getColor(R.color.black));
-        for (int i = 0; i <fraglist.size() ; i++) {
+        for (int i = 0; i < fraglist.size(); i++) {
             tabs.getTabAt(i).setText(titlelist.get(i));
         }
+        tabs.setSelectedTabIndicatorColor(getResources().getColor(R.color.white));
     }
 
     private void initViewPage() {
-        adapter=new ViewPageAdapter(getSupportFragmentManager(),fraglist);
+        adapter = new ViewPageAdapter(getSupportFragmentManager(), fraglist);
         viewpager.setAdapter(adapter);
         viewpager.setCurrentItem(0);
     }
@@ -91,7 +144,7 @@ public class WelcomeActivity extends BaseActivity {
     private void initFragment() {
 
         for (int i = 0; i < taskList.size(); i++) {
-            BaseFragment basefragment=new BaseFragment();
+            BaseFragment basefragment = new BaseFragment();
             fraglist.add(basefragment);
             titlelist.add(taskList.get(i).getType());
             Bundle bundle = new Bundle();
@@ -103,6 +156,13 @@ public class WelcomeActivity extends BaseActivity {
     private void initToolbar() {
         toolbar.inflateMenu(R.menu.basetoolbar_menu);
         title.setText(R.string.app_name);
+        toolbar.setNavigationIcon(R.drawable.drawer);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override
@@ -120,4 +180,5 @@ public class WelcomeActivity extends BaseActivity {
         super.onDestroy();
 
     }
+
 }

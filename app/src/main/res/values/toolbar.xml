@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    ...
-    ...
 
     <style name="Theme.ToolBar.ZhiHu" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="actionOverflowButtonStyle">@style/ActionButton.Overflow.ZhiHu</item>
     </style>
 
     <style name="ActionButton.Overflow.ZhiHu" parent="android:style/Widget.Holo.Light.ActionButton.Overflow">
-        <item name="android:src">@drawable/more_android</item>
+        <item name="android:src">@drawable/more</item>
     </style>
 
 </resources>
