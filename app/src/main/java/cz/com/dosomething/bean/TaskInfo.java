@@ -1,28 +1,38 @@
 package cz.com.dosomething.bean;
 
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
-
-import java.util.Date;
 
 /**
  * Created by cz on 2017/7/12.
  */
 @Entity
 public class TaskInfo  {
+    @Id
+    private Long id;
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     private String title;
-    private Date time;
+    private String time;
     private String content;
     private boolean ischecked;
-
-    @Generated(hash = 822021756)
-    public TaskInfo(String title, Date time, String content, boolean ischecked) {
+    private long customerId;
+    @Generated(hash = 978293787)
+    public TaskInfo(Long id, String title, String time, String content,
+            boolean ischecked, long customerId) {
+        this.id = id;
         this.title = title;
         this.time = time;
         this.content = content;
         this.ischecked = ischecked;
+        this.customerId = customerId;
     }
-
     @Generated(hash = 2022720704)
     public TaskInfo() {
     }
@@ -35,11 +45,11 @@ public class TaskInfo  {
         this.title = title;
     }
 
-    public Date getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(String time) {
         this.time = time;
     }
 
@@ -61,5 +71,11 @@ public class TaskInfo  {
 
     public boolean getIschecked() {
         return this.ischecked;
+    }
+    public long getCustomerId() {
+        return this.customerId;
+    }
+    public void setCustomerId(long customerId) {
+        this.customerId = customerId;
     }
 }

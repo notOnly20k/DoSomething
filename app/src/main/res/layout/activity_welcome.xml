@@ -22,6 +22,7 @@
                 android:id="@+id/tabs"
                 android:background="@color/blue"
                 app:tabTextColor="@color/gray"
+                app:tabMode="scrollable"
                app:tabIndicatorColor="@android:color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -41,7 +42,7 @@
            android:layout_gravity="bottom|right"
             android:layout_margin="16dp"
             app:pressedTranslationZ="6dp"
-           android:src="@drawable/logout"
+           android:src="@mipmap/add"
           android:transitionName="fab"
             />
 
@@ -88,19 +89,19 @@
             android:layout_height="wrap_content"
             android:drawablePadding="20dp"
             android:text="管理任务列表"
-            android:drawableLeft="@drawable/logout"
+            android:drawableLeft="@mipmap/logout"
             />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="设置"
-            android:drawableLeft="@drawable/logout"
+            android:drawableLeft="@mipmap/logout"
             />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="关于作者"
-            android:drawableLeft="@drawable/logout"
+            android:drawableLeft="@mipmap/logout"
             />
     </LinearLayout>
 

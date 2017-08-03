@@ -1,5 +1,6 @@
 package cz.com.dosomething.db;
 
+import java.util.List;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 
@@ -8,6 +9,8 @@ import org.greenrobot.greendao.Property;
 import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
+import org.greenrobot.greendao.query.Query;
+import org.greenrobot.greendao.query.QueryBuilder;
 
 import cz.com.dosomething.bean.TaskInfo;
 
@@ -15,7 +18,7 @@ import cz.com.dosomething.bean.TaskInfo;
 /** 
  * DAO for table "TASK_INFO".
 */
-public class TaskInfoDao extends AbstractDao<TaskInfo, Void> {
+public class TaskInfoDao extends AbstractDao<TaskInfo, Long> {
 
     public static final String TABLENAME = "TASK_INFO";
 
@@ -24,12 +27,15 @@ public class TaskInfoDao extends AbstractDao<TaskInfo, Void> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property Title = new Property(0, String.class, "title", false, "TITLE");
-        public final static Property Time = new Property(1, java.util.Date.class, "time", false, "TIME");
-        public final static Property Content = new Property(2, String.class, "content", false, "CONTENT");
-        public final static Property Ischecked = new Property(3, boolean.class, "ischecked", false, "ISCHECKED");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property Title = new Property(1, String.class, "title", false, "TITLE");
+        public final static Property Time = new Property(2, String.class, "time", false, "TIME");
+        public final static Property Content = new Property(3, String.class, "content", false, "CONTENT");
+        public final static Property Ischecked = new Property(4, boolean.class, "ischecked", false, "ISCHECKED");
+        public final static Property CustomerId = new Property(5, long.class, "customerId", false, "CUSTOMER_ID");
     }
 
+    private Query<TaskInfo> task_ListQuery;
 
     public TaskInfoDao(DaoConfig config) {
         super(config);
@@ -43,10 +49,12 @@ public class TaskInfoDao extends AbstractDao<TaskInfo, Void> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"TASK_INFO\" (" + //
-                "\"TITLE\" TEXT," + // 0: title
-                "\"TIME\" INTEGER," + // 1: time
-                "\"CONTENT\" TEXT," + // 2: content
-                "\"ISCHECKED\" INTEGER NOT NULL );"); // 3: ischecked
+                "\"_id\" INTEGER PRIMARY KEY ," + // 0: id
+                "\"TITLE\" TEXT," + // 1: title
+                "\"TIME\" TEXT," + // 2: time
+                "\"CONTENT\" TEXT," + // 3: content
+                "\"ISCHECKED\" INTEGER NOT NULL ," + // 4: ischecked
+                "\"CUSTOMER_ID\" INTEGER NOT NULL );"); // 5: customerId
     }
 
     /** Drops the underlying database table. */
@@ -59,83 +67,102 @@ public class TaskInfoDao extends AbstractDao<TaskInfo, Void> {
     protected final void bindValues(DatabaseStatement stmt, TaskInfo entity) {
         stmt.clearBindings();
  
-        String title = entity.getTitle();
-        if (title != null) {
-            stmt.bindString(1, title);
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
         }
  
-        java.util.Date time = entity.getTime();
+        String title = entity.getTitle();
+        if (title != null) {
+            stmt.bindString(2, title);
+        }
+ 
+        String time = entity.getTime();
         if (time != null) {
-            stmt.bindLong(2, time.getTime());
+            stmt.bindString(3, time);
         }
  
         String content = entity.getContent();
         if (content != null) {
-            stmt.bindString(3, content);
+            stmt.bindString(4, content);
         }
-        stmt.bindLong(4, entity.getIschecked() ? 1L: 0L);
+        stmt.bindLong(5, entity.getIschecked() ? 1L: 0L);
+        stmt.bindLong(6, entity.getCustomerId());
     }
 
     @Override
     protected final void bindValues(SQLiteStatement stmt, TaskInfo entity) {
         stmt.clearBindings();
  
-        String title = entity.getTitle();
-        if (title != null) {
-            stmt.bindString(1, title);
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
         }
  
-        java.util.Date time = entity.getTime();
+        String title = entity.getTitle();
+        if (title != null) {
+            stmt.bindString(2, title);
+        }
+ 
+        String time = entity.getTime();
         if (time != null) {
-            stmt.bindLong(2, time.getTime());
+            stmt.bindString(3, time);
         }
  
         String content = entity.getContent();
         if (content != null) {
-            stmt.bindString(3, content);
+            stmt.bindString(4, content);
         }
-        stmt.bindLong(4, entity.getIschecked() ? 1L: 0L);
+        stmt.bindLong(5, entity.getIschecked() ? 1L: 0L);
+        stmt.bindLong(6, entity.getCustomerId());
     }
 
     @Override
-    public Void readKey(Cursor cursor, int offset) {
-        return null;
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public TaskInfo readEntity(Cursor cursor, int offset) {
         TaskInfo entity = new TaskInfo( //
-            cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // title
-            cursor.isNull(offset + 1) ? null : new java.util.Date(cursor.getLong(offset + 1)), // time
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // content
-            cursor.getShort(offset + 3) != 0 // ischecked
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // title
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // time
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // content
+            cursor.getShort(offset + 4) != 0, // ischecked
+            cursor.getLong(offset + 5) // customerId
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, TaskInfo entity, int offset) {
-        entity.setTitle(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
-        entity.setTime(cursor.isNull(offset + 1) ? null : new java.util.Date(cursor.getLong(offset + 1)));
-        entity.setContent(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setIschecked(cursor.getShort(offset + 3) != 0);
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setTitle(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
+        entity.setTime(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setContent(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setIschecked(cursor.getShort(offset + 4) != 0);
+        entity.setCustomerId(cursor.getLong(offset + 5));
      }
     
     @Override
-    protected final Void updateKeyAfterInsert(TaskInfo entity, long rowId) {
-        // Unsupported or missing PK type
-        return null;
+    protected final Long updateKeyAfterInsert(TaskInfo entity, long rowId) {
+        entity.setId(rowId);
+        return rowId;
     }
     
     @Override
-    public Void getKey(TaskInfo entity) {
-        return null;
+    public Long getKey(TaskInfo entity) {
+        if(entity != null) {
+            return entity.getId();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public boolean hasKey(TaskInfo entity) {
-        // TODO
-        return false;
+        return entity.getId() != null;
     }
 
     @Override
@@ -143,4 +170,18 @@ public class TaskInfoDao extends AbstractDao<TaskInfo, Void> {
         return true;
     }
     
+    /** Internal query to resolve the "list" to-many relationship of Task. */
+    public List<TaskInfo> _queryTask_List(long customerId) {
+        synchronized (this) {
+            if (task_ListQuery == null) {
+                QueryBuilder<TaskInfo> queryBuilder = queryBuilder();
+                queryBuilder.where(Properties.CustomerId.eq(null));
+                task_ListQuery = queryBuilder.build();
+            }
+        }
+        Query<TaskInfo> query = task_ListQuery.forCurrentThread();
+        query.setParameter(0, customerId);
+        return query.list();
+    }
+
 }

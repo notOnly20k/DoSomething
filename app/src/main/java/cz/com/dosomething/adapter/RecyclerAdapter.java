@@ -36,6 +36,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+
         TaskInfo taskInfo=list.get(position);
         if (taskInfo.ischecked()){
             holder.check.isChecked();

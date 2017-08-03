@@ -24,12 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import cz.com.dosomething.R;
 import cz.com.dosomething.adapter.ViewPageAdapter;
 import cz.com.dosomething.bean.Task;
-import cz.com.dosomething.bean.TaskInfo;
+import cz.com.dosomething.db.TaskDao;
+import cz.com.dosomething.db.TaskInfoDao;
 import cz.com.dosomething.fragment.BaseFragment;
+import cz.com.dosomething.others.MyApplication;
 
 public class WelcomeActivity extends BaseActivity {
 
@@ -47,6 +48,7 @@ public class WelcomeActivity extends BaseActivity {
     DrawerLayout activityWelcome;
     @BindView(R.id.fab)
     FloatingActionButton fab;
+    private String TAG="WelcomeActivity";
     private List<Fragment> fraglist = new ArrayList<>();
     private List<String> titlelist = new ArrayList<>();
     private ViewPageAdapter adapter;
@@ -60,9 +62,6 @@ public class WelcomeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_welcome);
-
-        ButterKnife.bind(this);
         final View v=findViewById(R.id.activity_welcome);
         v.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -74,7 +73,7 @@ public class WelcomeActivity extends BaseActivity {
                 }
             }
         });
-        initTask();
+        setDate();
         initToolbar();
         initFragment();
         initViewPage();
@@ -83,11 +82,35 @@ public class WelcomeActivity extends BaseActivity {
 
     }
 
+    private void setDate() {
+        TaskInfoDao taskinfoDao = MyApplication.getInstance().getDaoSession().getTaskInfoDao();
+        TaskDao taskDao = MyApplication.getInstance().getDaoSession().getTaskDao();
+
+        if (taskDao.loadAll().size()==0){
+            String[] s={"家","公司","学校"};
+            for (int i = 0; i < 3; i++) {
+                Task t=new Task();
+                t.setType(s[i]);
+                t.setNum(i);
+                taskDao.insert(t);
+            }
+        }
+
+        taskList.addAll(taskDao.loadAll());
+    }
+
     private void setFab() {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(WelcomeActivity.this,WriteTaskActivity.class);
+                int i=tabs.getSelectedTabPosition();
+                for (int j = 0; j <taskList.size() ; j++) {
+                    Task t=taskList.get(j);
+                 if (t.getNum()==i){
+                     intent.putExtra("id",t.getId());
+                 }
+                }
                 ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
                         WelcomeActivity.this,fab,"fab");
 
@@ -105,26 +128,10 @@ public class WelcomeActivity extends BaseActivity {
 
         Animator animator = ViewAnimationUtils.createCircularReveal(fab, cx, cy,0, cy);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.setDuration(1000);
+        animator.setDuration(200);
         animator.start();
     }
-    private void initTask() {
-        for (int i = 0; i < 5; i++) {
-            Task task = new Task();
-            task.setType("任务" + i);
-            task.setNum(i);
-            List<TaskInfo> taskinfoList = new ArrayList<>();
-            for (int j = 0; j < 10; j++) {
-                TaskInfo taskinfo = new TaskInfo();
-                taskinfo.setContent("吃饭");
-                taskinfo.setTitle("对");
-                taskinfoList.add(taskinfo);
-            }
-            task.setList(taskinfoList);
-            taskList.add(task);
-        }
 
-    }
 
     private void initTabs() {
         tabs.setupWithViewPager(viewpager);
@@ -133,6 +140,7 @@ public class WelcomeActivity extends BaseActivity {
             tabs.getTabAt(i).setText(titlelist.get(i));
         }
         tabs.setSelectedTabIndicatorColor(getResources().getColor(R.color.white));
+
     }
 
     private void initViewPage() {
@@ -148,6 +156,7 @@ public class WelcomeActivity extends BaseActivity {
             fraglist.add(basefragment);
             titlelist.add(taskList.get(i).getType());
             Bundle bundle = new Bundle();
+            bundle.putLong("id",taskList.get(i).getId());
             basefragment.setArguments(bundle);
         }
 
@@ -156,7 +165,7 @@ public class WelcomeActivity extends BaseActivity {
     private void initToolbar() {
         toolbar.inflateMenu(R.menu.basetoolbar_menu);
         title.setText(R.string.app_name);
-        toolbar.setNavigationIcon(R.drawable.drawer);
+        toolbar.setNavigationIcon(R.mipmap.drawer);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
