@@ -164,7 +164,6 @@ public class WelcomeActivity extends BaseActivity {
 
     private void initToolbar() {
         toolbar.inflateMenu(R.menu.basetoolbar_menu);
-        title.setText(R.string.app_name);
         toolbar.setNavigationIcon(R.mipmap.drawer);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
